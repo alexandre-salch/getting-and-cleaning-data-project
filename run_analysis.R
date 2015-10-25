@@ -1,5 +1,14 @@
 library(dplyr)
 
+# Function that merges the data set, the subject and the activity from a given folder.
+# 
+# parameters:
+#     - path: string, name of the folder
+#     - features_names: vector of strings, contains the name of all the features in the data set
+#     - selected_features_names: vector of logicals, contains boolean value equals to true if the feature should be stored in the tidy data set
+# returns:
+#     - a data frame with a column for each feature (the name of the columns corresponds to the names in feature.txt), 
+#       plus a column for the subject (column name is subject) and one for the activity (column name is activity)
 merge_one_dataset <- function(path, features_names, selected_features_names) {
   data_subject <- read.fwf(file = paste("UCI HAR Dataset/", path, "/subject_", path, ".txt", sep = ""), widths = 2)
   data_subject <- rename(data_subject, subject = V1)
@@ -12,10 +21,20 @@ merge_one_dataset <- function(path, features_names, selected_features_names) {
   cbind(data_subject, data_feature, selected_set)
 }
 
+# Function used to extract column names corresponding to avg() and mean() measures.
+#
+# returns: 
+#     - true if the string passed as parameter contains either the string "mean()" or the string "std()"
+#     - false otherwise 
 mean_or_std <- function(string) {
   grepl(pattern = "mean\\(\\)", x = string) || grepl(pattern = "std\\(\\)", x = string)
 }
 
+# Function that returns a merged data frame from train and test data.
+# 
+# returns:
+#     - a data frame with a column for each feature (the name of the columns corresponds to the names in feature.txt), 
+#       plus a column for the subject (column name is subject) and one for the activity (column name is activity)
 get_tidy_data <- function() {
   features <- read.csv(file = "UCI HAR Dataset/features.txt", header = FALSE, sep = " ")
   features_names <- as.character(features$V2)
